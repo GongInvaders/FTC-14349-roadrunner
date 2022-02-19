@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
+import android.graphics.Paint;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.drive.Drive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -43,7 +45,7 @@ public class SplineTest extends LinearOpMode {
 
     private int minRectangleArea = 2000;
     private double leftBarcodeRangeBoundary = 0.3; //i.e 30% of the way across the frame from the left
-    private double rightBarcodeRangeBoundary = 0.7; //i.e 60% of the way across the frame from the left
+    private double rightBarcodeRangeBoundary = 0.6; //i.e 60% of the way across the frame from the left
 
     private double lowerRuntime = 0;
     private double upperRuntime = 0;
@@ -92,7 +94,7 @@ public class SplineTest extends LinearOpMode {
 
         Spool.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         GrabSpin.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        Carousel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Carousel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
 
@@ -174,13 +176,17 @@ public class SplineTest extends LinearOpMode {
 
         if (isStopRequested()) return;
 
+
+
         Trajectory hub = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(-10, -40), Math.toRadians(90))
+                .splineTo(new Vector2d(-10, -41), Math.toRadians(90))
                 .build();
         Trajectory carousel = drive.trajectoryBuilder(hub.end(), true)
                 .splineTo(new Vector2d(-62, -48), Math.toRadians(180))
                 .addTemporalMarker(1, ()->{
                     Flap.setPosition(0.95);
+                    CapArm.setPosition(0.7);
+                    CapGrab.setPosition(0);
                     Spool.setTargetPosition(0);
                     Spool.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Spool.setPower(1);})
@@ -248,12 +254,17 @@ public class SplineTest extends LinearOpMode {
                 .build();*/
 
         Flap.setPosition(0.95);
+        CapGrab.setPosition(0.1);
         if (right == true){
-            Spool.setTargetPosition(140*17);
-        } else if (left == true){
-            Spool.setTargetPosition(814);
-        } else {
             Spool.setTargetPosition(1575);
+            CapArm.setPosition(0.3);
+
+        } else if (left == true){
+            Spool.setTargetPosition(0);
+            CapArm.setPosition(0.3);
+        } else {
+            Spool.setTargetPosition(0);
+            CapArm.setPosition(0.425);
         }
 
         Spool.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -263,19 +274,7 @@ public class SplineTest extends LinearOpMode {
 
         }
         Spool.setPower(0);
-        sleep(500);
-        if(right == true){
-            Flap.setPosition(0.75);
-            sleep(250);
-        } else{
-            GrabSpin.setTargetPosition(-600);
-            GrabSpin.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            GrabSpin.setPower(1);
-            while(GrabSpin.isBusy()){
-
-            }
-            GrabSpin.setPower(0);
-        }
+        CapGrab.setPosition(0.5);
         drive.followTrajectory(carousel);
         while (Spool.isBusy()){
 
@@ -296,7 +295,7 @@ public class SplineTest extends LinearOpMode {
         sleep(500);
 
 
-        GrabSpin.setTargetPosition(1400);
+        GrabSpin.setTargetPosition(1000);
         GrabSpin.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         drive.followTrajectory(strafe);
         GrabSpin.setPower(1);
@@ -319,13 +318,11 @@ public class SplineTest extends LinearOpMode {
         }
         Spool.setPower(0);
         drive.followTrajectory(carouselstrafe);
-        Carousel.setTargetPosition(1000);
-        Carousel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        Carousel.setPower(0.1);
 
-        while (Carousel.isBusy()){
+        Carousel.setPower(0.2);
 
-        }
+
+        sleep(3000);
         Carousel.setPower(0);
         drive.followTrajectory(park);
 
