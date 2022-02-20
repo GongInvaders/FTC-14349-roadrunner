@@ -92,7 +92,7 @@ public class PrimoDriveEpic extends LinearOpMode {
 
 
         Spool.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        GrabSpin.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //GrabSpin.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Carousel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
@@ -212,7 +212,7 @@ public class PrimoDriveEpic extends LinearOpMode {
             }
             else {
                 //intake.setPower(-1);
-                Carousel.setPower(0.2);
+                Carousel.setPower(0.6);
             }
 
         }

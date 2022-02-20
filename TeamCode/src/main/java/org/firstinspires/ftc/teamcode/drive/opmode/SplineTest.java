@@ -43,7 +43,7 @@ public class SplineTest extends LinearOpMode {
     private double cbThreshHigh = 255;
     private double cbThreshLow = 255;
 
-    private int minRectangleArea = 2000;
+    private int minRectangleArea = 1000;
     private double leftBarcodeRangeBoundary = 0.3; //i.e 30% of the way across the frame from the left
     private double rightBarcodeRangeBoundary = 0.6; //i.e 60% of the way across the frame from the left
 
@@ -128,7 +128,7 @@ public class SplineTest extends LinearOpMode {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         //OpenCV Pipeline
 
-        pipeline = new ContourPipeline(0.2, 0.2, 0.2, 0.2);
+        pipeline = new ContourPipeline(0, 0, 0, 0);
 
         pipeline.configureScalarLower(scalarLowerYCrCb.val[0],scalarLowerYCrCb.val[1],scalarLowerYCrCb.val[2]);
         pipeline.configureScalarUpper(scalarUpperYCrCb.val[0],scalarUpperYCrCb.val[1],scalarUpperYCrCb.val[2]);
@@ -182,6 +182,7 @@ public class SplineTest extends LinearOpMode {
                 .splineTo(new Vector2d(-10, -41), Math.toRadians(90))
                 .build();
         Trajectory carousel = drive.trajectoryBuilder(hub.end(), true)
+                .splineTo(new Vector2d(-10, -46), Math.toRadians(90))
                 .splineTo(new Vector2d(-62, -48), Math.toRadians(180))
                 .addTemporalMarker(1, ()->{
                     Flap.setPosition(0.95);
@@ -192,7 +193,7 @@ public class SplineTest extends LinearOpMode {
                     Spool.setPower(1);})
                 .build();
         Trajectory strafe = drive.trajectoryBuilder(carousel.end())
-                .lineTo(new Vector2d(-62,-34.5),
+                .lineTo(new Vector2d(-63,-34.5),
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
@@ -216,8 +217,8 @@ public class SplineTest extends LinearOpMode {
 
                 })
                 .build();
-        Trajectory duckdrop = drive.trajectoryBuilder(forwardafterstrafe.end().plus(new Pose2d(0, 0, Math.toRadians(15))))
-                .splineTo(new Vector2d(-24, -30), Math.toRadians(30))
+        Trajectory duckdrop = drive.trajectoryBuilder(forwardafterstrafe.end())
+                .splineTo(new Vector2d(-24, -30), Math.toRadians(15))
                 .build();
 
         Trajectory prepareforcarousel = drive.trajectoryBuilder(duckdrop.end(), true)
@@ -295,7 +296,7 @@ public class SplineTest extends LinearOpMode {
         sleep(500);
 
 
-        GrabSpin.setTargetPosition(1100);
+        GrabSpin.setTargetPosition(1000);
         GrabSpin.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         drive.followTrajectory(strafe);
         GrabSpin.setPower(1);
@@ -319,7 +320,7 @@ public class SplineTest extends LinearOpMode {
         Spool.setPower(0);
         drive.followTrajectory(carouselstrafe);
 
-        Carousel.setPower(0.2);
+        Carousel.setPower(0.6);
 
 
         sleep(3000);
