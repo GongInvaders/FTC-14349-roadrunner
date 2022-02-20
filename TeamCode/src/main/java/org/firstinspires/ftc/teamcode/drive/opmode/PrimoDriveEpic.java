@@ -54,6 +54,8 @@ public class PrimoDriveEpic extends LinearOpMode {
     private Servo CapArm = null;
     private Servo CapGrab = null;
 
+    private TouchSensor button = null;
+
     double driveadjust = 2;
 
 
@@ -82,6 +84,8 @@ public class PrimoDriveEpic extends LinearOpMode {
         CapArm = hardwareMap.get(Servo.class, "CapArm");
         CapGrab = hardwareMap.get(Servo.class, "CapGrab");
         Flap = hardwareMap.get(Servo.class,"Flap");
+
+        button = hardwareMap.get(TouchSensor.class, "touch");
 
         Spool.setDirection(DcMotor.Direction.REVERSE);
 
@@ -131,88 +135,71 @@ public class PrimoDriveEpic extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         //LEFT MOTORS ARE REVERSED THEREFORE NEED TO BE SET TO NEGATIVE VALUES TO GO FORWARD
         while (opModeIsActive()) {
-       // rightshoot.setVelocityPIDFCoefficients(125,0,70,13.5);    
-    double G1rightstickY = gamepad1.right_stick_y;
-    double G1leftstickY = gamepad1.left_stick_y;
-    double G1rightstickX = gamepad1.right_stick_x;
-    double G1leftstickX = gamepad1.left_stick_x;
-    double G1lefttrigger = gamepad1.left_trigger*0.6;
-    double G1righttrigger = gamepad1.right_trigger*0.6;
+            // rightshoot.setVelocityPIDFCoefficients(125,0,70,13.5);
+            double G1rightstickY = gamepad1.right_stick_y;
+            double G1leftstickY = gamepad1.left_stick_y;
+            double G1rightstickX = gamepad1.right_stick_x;
+            double G1leftstickX = gamepad1.left_stick_x;
+            double G1lefttrigger = gamepad1.left_trigger * 0.6;
+            double G1righttrigger = gamepad1.right_trigger * 0.6;
 
-    if(gamepad1.right_bumper){
-        driveadjust=driveadjust+1;
-        sleep(200);
-    }
-    
-    
-
-               
-                                
+            if (gamepad1.right_bumper) {
+                driveadjust = driveadjust + 1;
+                sleep(200);
+            }
 
 
-
-            
-        if((driveadjust%2)!=0) {
-           // ledservo.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
-                if (G1lefttrigger >= 0.1 ){
-                    rightfront.setPower(G1lefttrigger*0.6);
-                    rightback.setPower(-G1lefttrigger*0.6);
-                    leftfront.setPower(G1lefttrigger*0.6);
-                    leftback.setPower(-G1lefttrigger*0.6);
-                } 
-                else if (G1righttrigger >= 0.1){
-                    rightfront.setPower(-G1righttrigger*0.6);
-                    rightback.setPower(G1righttrigger*0.6);
-                    leftfront.setPower(-G1righttrigger*0.6);
-                    leftback.setPower(G1righttrigger*0.6);
+            if ((driveadjust % 2) != 0) {
+                // ledservo.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+                if (G1lefttrigger >= 0.1) {
+                    rightfront.setPower(G1lefttrigger * 0.6);
+                    rightback.setPower(-G1lefttrigger * 0.6);
+                    leftfront.setPower(G1lefttrigger * 0.6);
+                    leftback.setPower(-G1lefttrigger * 0.6);
+                } else if (G1righttrigger >= 0.1) {
+                    rightfront.setPower(-G1righttrigger * 0.6);
+                    rightback.setPower(G1righttrigger * 0.6);
+                    leftfront.setPower(-G1righttrigger * 0.6);
+                    leftback.setPower(G1righttrigger * 0.6);
                 } else {
-                   rightfront.setPower(-G1rightstickY*0.6);
-                   rightback.setPower(-G1rightstickY*0.6);
-                   leftfront.setPower(G1leftstickY*0.6);
-                   leftback.setPower(G1leftstickY*0.6);
-                   
+                    rightfront.setPower(-G1rightstickY * 0.6);
+                    rightback.setPower(-G1rightstickY * 0.6);
+                    leftfront.setPower(G1leftstickY * 0.6);
+                    leftback.setPower(G1leftstickY * 0.6);
+
                 }
 
 
-        }    
-        else {
+            } else {
                 //ledservo.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
 
-                if (G1lefttrigger >= 0.1 ){
+                if (G1lefttrigger >= 0.1) {
                     rightfront.setPower(G1lefttrigger);
                     rightback.setPower(-G1lefttrigger);
                     leftfront.setPower(G1lefttrigger);
                     leftback.setPower(-G1lefttrigger);
-                } 
-                else if (G1righttrigger >= 0.1){
+                } else if (G1righttrigger >= 0.1) {
                     rightfront.setPower(-G1righttrigger);
                     rightback.setPower(G1righttrigger);
                     leftfront.setPower(-G1righttrigger);
                     leftback.setPower(G1righttrigger);
                 } else {
-                   rightfront.setPower(-G1rightstickY);
-                   rightback.setPower(-G1rightstickY);
-                   leftfront.setPower(G1leftstickY);
-                   leftback.setPower(G1leftstickY);
-                   
+                    rightfront.setPower(-G1rightstickY);
+                    rightback.setPower(-G1rightstickY);
+                    leftfront.setPower(G1leftstickY);
+                    leftback.setPower(G1leftstickY);
+
                 }
 
-        }
-        
-                  
-        
-        
-        
-        if(gamepad2.right_stick_y<=-0.1){
+            }
+        if(gamepad2.right_stick_y>=0.1 && !button.isPressed()){
             //surgical.setPower(-1);
             Spool.setPower(gamepad2.right_stick_y);
             
-        }
-        else if(gamepad2.right_stick_y>=0.1){
+        } else if(gamepad2.right_stick_y<=-0.1){
             //surgical.setPower(1);
             Spool.setPower(gamepad2.right_stick_y);
-        }
-        else {
+        } else {
             //surgical.setPower(0);
             Spool.setPower(0);
         }
@@ -311,6 +298,7 @@ public class PrimoDriveEpic extends LinearOpMode {
                 telemetry.addData("Arm Position: ", Spool.getCurrentPosition());
                 telemetry.addData("left-trigger: ", G1lefttrigger);
                 telemetry.addData("right-trigger: ", G1righttrigger);
+                telemetry.addData("button: ", button.getValue());
                // telemetry.addData("RealVelocity: ", rightshoot.getVelocity()/(103.6/60));
 
                // telemetry.addData("toggle", toggle);

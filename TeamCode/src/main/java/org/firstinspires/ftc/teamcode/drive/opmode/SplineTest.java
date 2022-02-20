@@ -295,7 +295,7 @@ public class SplineTest extends LinearOpMode {
         sleep(500);
 
 
-        GrabSpin.setTargetPosition(1000);
+        GrabSpin.setTargetPosition(1100);
         GrabSpin.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         drive.followTrajectory(strafe);
         GrabSpin.setPower(1);
