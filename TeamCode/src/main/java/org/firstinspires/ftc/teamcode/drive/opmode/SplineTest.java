@@ -182,7 +182,7 @@ public class SplineTest extends LinearOpMode {
                 .splineTo(new Vector2d(-10, -41), Math.toRadians(90))
                 .build();
         Trajectory carousel = drive.trajectoryBuilder(hub.end(), true)
-                .splineTo(new Vector2d(-10, -46), Math.toRadians(90))
+                .splineTo(new Vector2d(-10, -46), Math.toRadians(-90))
                 .splineTo(new Vector2d(-62, -48), Math.toRadians(180))
                 .addTemporalMarker(1, ()->{
                     Flap.setPosition(0.95);
@@ -218,7 +218,7 @@ public class SplineTest extends LinearOpMode {
                 })
                 .build();
         Trajectory duckdrop = drive.trajectoryBuilder(forwardafterstrafe.end())
-                .splineTo(new Vector2d(-24, -30), Math.toRadians(15))
+                .splineTo(new Vector2d(-24, -30), Math.toRadians(30))
                 .build();
 
         Trajectory prepareforcarousel = drive.trajectoryBuilder(duckdrop.end(), true)
@@ -229,12 +229,12 @@ public class SplineTest extends LinearOpMode {
                     Spool.setPower(1);})
                 .build();
         Trajectory carouselstrafe = drive.trajectoryBuilder(prepareforcarousel.end(), true)
-                .lineTo(new Vector2d(-62,-56),
+                .lineTo(new Vector2d(-62,-58),
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
         Trajectory park = drive.trajectoryBuilder(carouselstrafe.end(), true)
-                .lineTo(new Vector2d(-62,-34.5),
+                .lineTo(new Vector2d(-62,-35.5),
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
@@ -320,12 +320,13 @@ public class SplineTest extends LinearOpMode {
         Spool.setPower(0);
         drive.followTrajectory(carouselstrafe);
 
-        Carousel.setPower(0.6);
+        Carousel.setPower(0.5);
 
 
         sleep(3000);
         Carousel.setPower(0);
         drive.followTrajectory(park);
+        drive.followTrajectory(backup);
 
 
 
