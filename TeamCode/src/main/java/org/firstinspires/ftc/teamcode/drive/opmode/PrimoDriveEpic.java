@@ -3,7 +3,11 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -18,10 +22,12 @@ import com.qualcomm.robotcore.hardware.PIDCoefficients;
 
 
 import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
@@ -50,9 +56,13 @@ public class PrimoDriveEpic extends LinearOpMode {
 
     private DcMotor GrabSpin = null;
     private DcMotor Carousel = null;
+    private DcMotor MagnetLift = null;
     private Servo Flap = null;
     private Servo CapArm = null;
     private Servo CapGrab = null;
+
+    private ColorSensor Colour_REV_ColorRangeSensor = null;
+    private RevBlinkinLedDriver ledStrip = null;
 
     private TouchSensor button = null;
 
@@ -65,8 +75,13 @@ public class PrimoDriveEpic extends LinearOpMode {
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        
 
+        int gain;
+        NormalizedRGBA normalizedColours;
+        int color;
+        float hue;
+        float saturation;
+        float value;
 
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
@@ -81,11 +96,15 @@ public class PrimoDriveEpic extends LinearOpMode {
         Spool = hardwareMap.get(DcMotor.class, "Spool");
         GrabSpin = hardwareMap.get(DcMotor.class, "GrabSpin");
         Carousel = hardwareMap.get(DcMotor.class, "Carousel");
+        MagnetLift = hardwareMap.get(DcMotor.class, "MagnetLift");
         CapArm = hardwareMap.get(Servo.class, "CapArm");
         CapGrab = hardwareMap.get(Servo.class, "CapGrab");
         Flap = hardwareMap.get(Servo.class,"Flap");
 
         button = hardwareMap.get(TouchSensor.class, "touch");
+
+        Colour_REV_ColorRangeSensor = hardwareMap.get(ColorSensor.class, "Colour");
+        ledStrip = hardwareMap.get(RevBlinkinLedDriver.class, "LEDStrip");
 
         Spool.setDirection(DcMotor.Direction.REVERSE);
 
@@ -113,7 +132,7 @@ public class PrimoDriveEpic extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-
+        gain = 2;
         
         // wobble.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
       //  wobble.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -127,14 +146,36 @@ public class PrimoDriveEpic extends LinearOpMode {
         //Turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Spool.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Carousel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-
+        MagnetLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        CapArm.setPosition(0.5);
 
         runtime.reset();
 
         // run until the end of the match (driver presses STOP)
         //LEFT MOTORS ARE REVERSED THEREFORE NEED TO BE SET TO NEGATIVE VALUES TO GO FORWARD
         while (opModeIsActive()) {
+            ((NormalizedColorSensor) Colour_REV_ColorRangeSensor).setGain(gain);
+            normalizedColours = ((NormalizedColorSensor) Colour_REV_ColorRangeSensor).getNormalizedColors();
+            color = normalizedColours.toColor();
+            hue = JavaUtil.colorToHue(color);
+            saturation = JavaUtil.colorToSaturation(color);
+            value = JavaUtil.colorToValue(color);
+
+            if(((DistanceSensor) Colour_REV_ColorRangeSensor).getDistance(DistanceUnit.CM) < 3){
+                if (hue < 90) {
+                    telemetry.addData("Object", "Cube");
+                    ledStrip.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+                } else if (hue < 150) {
+                    telemetry.addData("Object", "Duck");
+                    ledStrip.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+                } else if (hue < 225) {
+                    telemetry.addData("Object", "Ball");
+                    ledStrip.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+                }
+            } else {
+                ledStrip.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
+            }
+
             // rightshoot.setVelocityPIDFCoefficients(125,0,70,13.5);
             double G1rightstickY = gamepad1.right_stick_y;
             double G1leftstickY = gamepad1.left_stick_y;
@@ -203,6 +244,20 @@ public class PrimoDriveEpic extends LinearOpMode {
             //surgical.setPower(0);
             Spool.setPower(0);
         }
+        if(gamepad2.left_stick_y>=0.1){
+            //surgical.setPower(-1);
+            MagnetLift.setPower(-1*gamepad2.left_stick_y);
+
+        } else if(gamepad2.left_stick_y<=-0.1) {
+            //surgical.setPower(1);
+            MagnetLift.setPower(-1 * gamepad2.left_stick_y);
+        }else if(gamepad2.a){
+                MagnetLift.setPower(-0.2);
+            }
+        else {
+            //surgical.setPower(0);
+            MagnetLift.setPower(0);
+        }
 
         
         
@@ -212,7 +267,7 @@ public class PrimoDriveEpic extends LinearOpMode {
             }
             else {
                 //intake.setPower(-1);
-                Carousel.setPower(0.6);
+                Carousel.setPower(0.7);
             }
 
         }
@@ -246,7 +301,7 @@ public class PrimoDriveEpic extends LinearOpMode {
             }
             
             else if (gamepad2.a){
-                CapArm.setPosition(0);
+                CapArm.setPosition(0.15);
             }
             
             if (gamepad2.dpad_left){

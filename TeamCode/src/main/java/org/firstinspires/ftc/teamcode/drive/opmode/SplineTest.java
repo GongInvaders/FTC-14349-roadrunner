@@ -64,6 +64,7 @@ public class SplineTest extends LinearOpMode {
 
     private DcMotor GrabSpin = null;
     private DcMotor Carousel = null;
+    private DcMotor MagnetLift = null;
     private Servo Flap = null;
     private Servo CapArm = null;
     private Servo CapGrab = null;
@@ -86,6 +87,7 @@ public class SplineTest extends LinearOpMode {
         Spool = hardwareMap.get(DcMotor.class, "Spool"); //Ticks per revolution of this motor = 140
         GrabSpin = hardwareMap.get(DcMotor.class, "GrabSpin");
         Carousel = hardwareMap.get(DcMotor.class, "Carousel"); //Ticks per revolution is 56
+        MagnetLift = hardwareMap.get(DcMotor.class, "MagnetLift");
         CapArm = hardwareMap.get(Servo .class, "CapArm");
         CapGrab = hardwareMap.get(Servo.class, "CapGrab");
         Flap = hardwareMap.get(Servo.class,"Flap");
@@ -149,12 +151,15 @@ public class SplineTest extends LinearOpMode {
         });
 
         // Only if you are using ftcdashboard
-        FtcDashboard dashboard = FtcDashboard.getInstance();
-        telemetry = dashboard.getTelemetry();
+        //FtcDashboard dashboard = FtcDashboard.getInstance();
+        //telemetry = dashboard.getTelemetry();
         FtcDashboard.getInstance().startCameraStream(webcam, 20);
 
         sleep(3000);
 
+
+
+        waitForStart();
         if(pipeline.getRectArea() > minRectangleArea){
             //Then check the location of the rectangle to see which barcode it is in.
             if(pipeline.getRectMidpointX() > (rightBarcodeRangeBoundary * 640)){
@@ -171,9 +176,6 @@ public class SplineTest extends LinearOpMode {
             }
         }
         telemetry.update();
-
-        waitForStart();
-
         if (isStopRequested()) return;
 
 
@@ -193,7 +195,7 @@ public class SplineTest extends LinearOpMode {
                     Spool.setPower(1);})
                 .build();
         Trajectory strafe = drive.trajectoryBuilder(carousel.end())
-                .lineTo(new Vector2d(-63,-34.5),
+                .lineTo(new Vector2d(-63,-34),
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
