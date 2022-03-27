@@ -1,28 +1,18 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
-import android.graphics.Paint;
-
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.roadrunner.drive.Drive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.checkerframework.checker.index.qual.SameLen;
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
-import org.firstinspires.ftc.teamcode.drive.opmode.PrimoDriveEpic;
-
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-
-
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.opencv.core.Scalar;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -33,7 +23,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
  * This is an example of a more complex path to really test the tuning.
  */
 @Autonomous(group = "drive")
-public class SplineTest extends LinearOpMode {
+public class AU_BLUE_CAROUSEL_ND_WAREHOUSE extends LinearOpMode {
 
     private OpenCvCamera webcam;
     private ContourPipeline pipeline;
@@ -123,7 +113,7 @@ public class SplineTest extends LinearOpMode {
 
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(12.7, -62.5, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-34.3, 62.5, Math.toRadians(-90));
         drive.setPoseEstimate(startPose);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -180,12 +170,14 @@ public class SplineTest extends LinearOpMode {
 
 
 
-        Trajectory hub = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(-10, -41), Math.toRadians(90))
+        Trajectory hub1 = drive.trajectoryBuilder(startPose)
+                .splineTo(new Vector2d(-59, 41), Math.toRadians(-90))
                 .build();
-        Trajectory carousel = drive.trajectoryBuilder(hub.end(), true)
-                .splineTo(new Vector2d(-10, -46), Math.toRadians(-90))
-                .splineTo(new Vector2d(-62, -48), Math.toRadians(180))
+        Trajectory hub2 = drive.trajectoryBuilder(hub1.end())
+                .splineTo(new Vector2d(-30, 24),0)
+                .build();
+        Trajectory carousel = drive.trajectoryBuilder(hub2.end(), true)
+                .splineTo(new Vector2d(-63, 24), Math.toRadians(180))
                 .addTemporalMarker(1, ()->{
                     Flap.setPosition(0.95);
                     CapArm.setPosition(0.7);
@@ -195,12 +187,12 @@ public class SplineTest extends LinearOpMode {
                     Spool.setPower(1);})
                 .build();
         Trajectory strafe = drive.trajectoryBuilder(carousel.end())
-                .lineTo(new Vector2d(-63,-34),
+                .lineTo(new Vector2d(-63,34),
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
         Trajectory backstrafe = drive.trajectoryBuilder(carousel.end())
-                .lineTo(new Vector2d(-64,-32),
+                .lineTo(new Vector2d(-64,32),
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
@@ -209,8 +201,8 @@ public class SplineTest extends LinearOpMode {
                 .build();
         Trajectory forwardafterstrafe = drive.trajectoryBuilder(strafe.end())
                 .forward(34,
-                    SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                    SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addDisplacementMarker(34, ()->{
                     Spool.setTargetPosition(140*17);
                     Spool.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -220,25 +212,29 @@ public class SplineTest extends LinearOpMode {
                 })
                 .build();
         Trajectory duckdrop = drive.trajectoryBuilder(forwardafterstrafe.end())
-                .splineTo(new Vector2d(-24, -30), Math.toRadians(30))
+                .splineTo(new Vector2d(-24, 30), Math.toRadians(-30))
                 .build();
 
         Trajectory prepareforcarousel = drive.trajectoryBuilder(duckdrop.end(), true)
-                .splineTo(new Vector2d(-62,-48), Math.toRadians(180))
+                .splineTo(new Vector2d(-62,24), Math.toRadians(180))
                 .addTemporalMarker(1, ()->{
                     Spool.setTargetPosition(0);
                     Spool.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Spool.setPower(1);})
                 .build();
         Trajectory carouselstrafe = drive.trajectoryBuilder(prepareforcarousel.end(), true)
-                .lineTo(new Vector2d(-62,-58),
+                .lineTo(new Vector2d(-63,56.5),
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
         Trajectory park = drive.trajectoryBuilder(carouselstrafe.end(), true)
-                .lineTo(new Vector2d(-62,-35.5),
+                .lineTo(new Vector2d(-62,32),
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .build();
+        Trajectory warehouse = drive.trajectoryBuilder((carouselstrafe.end()))
+                .splineTo(new Vector2d(12,64),0)
+                .forward(36)
                 .build();
 
         /*Trajectory traj2 = drive.trajectoryBuilder(traj1.end(),true)
@@ -255,45 +251,43 @@ public class SplineTest extends LinearOpMode {
         Trajectory traj5 = drive.trajectoryBuilder(traj4.end())
                 .splineTo(new Vector2d(-10, -36), Math.toRadians(90))
                 .build();*/
-
         Flap.setPosition(0.95);
         CapGrab.setPosition(0.72);
         if (right == true){
             Spool.setTargetPosition(1590);
-            CapArm.setPosition(0.25);
+            //CapArm.setPosition(0.25);
 
         } else if (left == true){
             Spool.setTargetPosition(0);
-            CapArm.setPosition(0.25);
+            //CapArm.setPosition(0.25);
         } else {
             Spool.setTargetPosition(935);
-            CapArm.setPosition(0.25);
+            //CapArm.setPosition(0.25);
         }
 
         Spool.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         Spool.setPower(1);
-        drive.followTrajectory(hub);
         while (Spool.isBusy()){
 
         }
         Spool.setPower(0);
+        drive.followTrajectory(hub1);
+        CapArm.setPosition(0.25);
+        drive.followTrajectory(hub2);
         CapGrab.setPosition(1);
+
         drive.followTrajectory(carousel);
         while (Spool.isBusy()){
 
         }
         Spool.setPower(0);
-        //drive.followTrajectory(strafe);
-        /*Carousel.setTargetPosition(3000);
-        Carousel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        Carousel.setPower(0.2);
-
-        while (Carousel.isBusy()){
-
-        }
+        drive.followTrajectory(carouselstrafe);
+        Carousel.setPower(0.5);
+        sleep(3000);
         Carousel.setPower(0);
-*/
+        drive.followTrajectory(warehouse);
 
+/*
         GrabSpin.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sleep(500);
 
@@ -332,6 +326,6 @@ public class SplineTest extends LinearOpMode {
 
 
 
-
+*/
     }
 }

@@ -60,6 +60,8 @@ public class PrimoDriveEpic extends LinearOpMode {
     private Servo Flap = null;
     private Servo CapArm = null;
     private Servo CapGrab = null;
+    private Servo GoatedGrabber = null;
+
 
     private ColorSensor Colour_REV_ColorRangeSensor = null;
     private RevBlinkinLedDriver ledStrip = null;
@@ -73,6 +75,12 @@ public class PrimoDriveEpic extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        double ServoPosition;
+        double ServoSpeed;
+
+        ServoPosition = 0.7;
+        ServoSpeed = 0.01;
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -100,6 +108,7 @@ public class PrimoDriveEpic extends LinearOpMode {
         CapArm = hardwareMap.get(Servo.class, "CapArm");
         CapGrab = hardwareMap.get(Servo.class, "CapGrab");
         Flap = hardwareMap.get(Servo.class,"Flap");
+        GoatedGrabber = hardwareMap.get(Servo.class,"GoatedGrabber");
 
         button = hardwareMap.get(TouchSensor.class, "touch");
 
@@ -262,14 +271,7 @@ public class PrimoDriveEpic extends LinearOpMode {
         
         
         if(gamepad1.left_bumper){
-            if (gamepad1.x){
-                Carousel.setPower(1);
-            }
-            else {
-                //intake.setPower(-1);
-                Carousel.setPower(0.7);
-            }
-
+            Carousel.setPower(1);
         }
         else{
             //intake.setPower(0);
@@ -293,23 +295,22 @@ public class PrimoDriveEpic extends LinearOpMode {
             
             
             if (gamepad2.dpad_up){
-                CapArm.setPosition(0.7);
+                ServoPosition += ServoSpeed;
             }
             
             else if (gamepad2.dpad_down){
-                CapArm.setPosition(0.28);
+                ServoPosition += -ServoSpeed;
+            }
+            CapArm.setPosition(ServoPosition);
+
+
+            
+            if (gamepad2.left_trigger>=0.1){
+                CapGrab.setPosition(1);
             }
             
-            else if (gamepad2.a){
-                CapArm.setPosition(0.15);
-            }
-            
-            if (gamepad2.dpad_left){
-                CapGrab.setPosition(0.5);
-            }
-            
-            else if (gamepad2.dpad_right){
-                CapGrab.setPosition(0);
+            else {
+                CapGrab.setPosition(0.63);
             }
 /*
             if (gamepad2.a && 1135 <= (rightshoot.getVelocity()/(103.6/60)) && (rightshoot.getVelocity()/(103.6/60))<= 1170){
@@ -351,7 +352,9 @@ public class PrimoDriveEpic extends LinearOpMode {
                 telemetry.addData("rightfront", rightfront.getCurrentPosition());
                 telemetry.addData("rightback", rightback.getCurrentPosition());
                 telemetry.addData("Arm Position: ", Spool.getCurrentPosition());
-                telemetry.addData("left-trigger: ", G1lefttrigger);
+                telemetry.addData("Servo Position: ", ServoPosition);
+
+            telemetry.addData("left-trigger: ", G1lefttrigger);
                 telemetry.addData("right-trigger: ", G1righttrigger);
                 telemetry.addData("button: ", button.getValue());
                // telemetry.addData("RealVelocity: ", rightshoot.getVelocity()/(103.6/60));

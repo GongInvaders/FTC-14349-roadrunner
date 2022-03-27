@@ -1,28 +1,18 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
-import android.graphics.Paint;
-
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.roadrunner.drive.Drive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.checkerframework.checker.index.qual.SameLen;
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
-import org.firstinspires.ftc.teamcode.drive.opmode.PrimoDriveEpic;
-
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-
-
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.opencv.core.Scalar;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -33,7 +23,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
  * This is an example of a more complex path to really test the tuning.
  */
 @Autonomous(group = "drive")
-public class SplineTest extends LinearOpMode {
+public class AU_RED_DUCK_DEPOT extends LinearOpMode {
 
     private OpenCvCamera webcam;
     private ContourPipeline pipeline;
@@ -123,7 +113,7 @@ public class SplineTest extends LinearOpMode {
 
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(12.7, -62.5, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-34.3, -62.5, Math.toRadians(90));
         drive.setPoseEstimate(startPose);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -231,7 +221,7 @@ public class SplineTest extends LinearOpMode {
                     Spool.setPower(1);})
                 .build();
         Trajectory carouselstrafe = drive.trajectoryBuilder(prepareforcarousel.end(), true)
-                .lineTo(new Vector2d(-62,-58),
+                .lineTo(new Vector2d(-58,-58),
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
@@ -254,8 +244,7 @@ public class SplineTest extends LinearOpMode {
                 .build();
         Trajectory traj5 = drive.trajectoryBuilder(traj4.end())
                 .splineTo(new Vector2d(-10, -36), Math.toRadians(90))
-                .build();*/
-
+                .build();
         Flap.setPosition(0.95);
         CapGrab.setPosition(0.72);
         if (right == true){
@@ -283,17 +272,13 @@ public class SplineTest extends LinearOpMode {
 
         }
         Spool.setPower(0);
-        //drive.followTrajectory(strafe);
-        /*Carousel.setTargetPosition(3000);
-        Carousel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        Carousel.setPower(0.2);
-
-        while (Carousel.isBusy()){
-
-        }
+        drive.followTrajectory(carouselstrafe);
+        Carousel.setPower(-0.5);
+        sleep(3000);
         Carousel.setPower(0);
-*/
+        drive.followTrajectory(park);
 
+/*
         GrabSpin.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sleep(500);
 
@@ -332,6 +317,6 @@ public class SplineTest extends LinearOpMode {
 
 
 
-
+*/
     }
 }
