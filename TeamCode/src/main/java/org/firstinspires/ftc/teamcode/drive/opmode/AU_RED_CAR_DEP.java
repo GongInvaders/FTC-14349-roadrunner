@@ -23,7 +23,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
  * This is an example of a more complex path to really test the tuning.
  */
 @Autonomous(group = "drive")
-public class AU_RED_DUCK_DEPOT extends LinearOpMode {
+public class AU_RED_CAR_DEP extends LinearOpMode {
 
     private OpenCvCamera webcam;
     private ContourPipeline pipeline;
