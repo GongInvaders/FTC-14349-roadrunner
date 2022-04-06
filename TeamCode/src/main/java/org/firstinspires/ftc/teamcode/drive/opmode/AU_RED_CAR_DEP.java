@@ -118,6 +118,7 @@ public class AU_RED_CAR_DEP extends LinearOpMode {
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+
         //OpenCV Pipeline
 
         pipeline = new ContourPipeline(0, 0, 0, 0);
@@ -143,7 +144,7 @@ public class AU_RED_CAR_DEP extends LinearOpMode {
         // Only if you are using ftcdashboard
         //FtcDashboard dashboard = FtcDashboard.getInstance();
         //telemetry = dashboard.getTelemetry();
-        FtcDashboard.getInstance().startCameraStream(webcam, 20);
+        //FtcDashboard.getInstance().startCameraStream(webcam, 20);
 
         sleep(3000);
 
