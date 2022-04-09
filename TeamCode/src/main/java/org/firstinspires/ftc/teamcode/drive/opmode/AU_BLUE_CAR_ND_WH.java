@@ -23,7 +23,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
  * This is an example of a more complex path to really test the tuning.
  */
 @Autonomous(group = "drive")
-public class AU_BLUE_CAROUSEL_ND extends LinearOpMode {
+public class AU_BLUE_CAR_ND_WH extends LinearOpMode {
 
     private OpenCvCamera webcam;
     private ContourPipeline pipeline;
@@ -177,7 +177,7 @@ public class AU_BLUE_CAROUSEL_ND extends LinearOpMode {
                 .splineTo(new Vector2d(-30, 24),0)
                 .build();
         Trajectory carousel = drive.trajectoryBuilder(hub2.end(), true)
-                .splineTo(new Vector2d(-60, 24), Math.toRadians(180))
+                .splineTo(new Vector2d(-63, 24), Math.toRadians(180))
                 .addTemporalMarker(1, ()->{
                     Flap.setPosition(0.95);
                     CapArm.setPosition(0.7);
@@ -187,7 +187,7 @@ public class AU_BLUE_CAROUSEL_ND extends LinearOpMode {
                     Spool.setPower(1);})
                 .build();
         Trajectory strafe = drive.trajectoryBuilder(carousel.end())
-                .lineTo(new Vector2d(-60,34),
+                .lineTo(new Vector2d(-63,34),
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
@@ -216,21 +216,25 @@ public class AU_BLUE_CAROUSEL_ND extends LinearOpMode {
                 .build();
 
         Trajectory prepareforcarousel = drive.trajectoryBuilder(duckdrop.end(), true)
-                .splineTo(new Vector2d(-60,24), Math.toRadians(180))
+                .splineTo(new Vector2d(-62,24), Math.toRadians(180))
                 .addTemporalMarker(1, ()->{
                     Spool.setTargetPosition(0);
                     Spool.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Spool.setPower(1);})
                 .build();
         Trajectory carouselstrafe = drive.trajectoryBuilder(prepareforcarousel.end(), true)
-                .lineTo(new Vector2d(-60,56.5),
+                .lineTo(new Vector2d(-63,56.5),
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
         Trajectory park = drive.trajectoryBuilder(carouselstrafe.end(), true)
-                .lineTo(new Vector2d(-62,36),
+                .lineTo(new Vector2d(-62,32),
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .build();
+        Trajectory warehouse = drive.trajectoryBuilder((carouselstrafe.end()))
+                .splineTo(new Vector2d(12,64),0)
+                .forward(36)
                 .build();
 
         /*Trajectory traj2 = drive.trajectoryBuilder(traj1.end(),true)
@@ -281,7 +285,7 @@ public class AU_BLUE_CAROUSEL_ND extends LinearOpMode {
         Carousel.setPower(0.5);
         sleep(3000);
         Carousel.setPower(0);
-        drive.followTrajectory(park);
+        drive.followTrajectory(warehouse);
 
 /*
         GrabSpin.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
