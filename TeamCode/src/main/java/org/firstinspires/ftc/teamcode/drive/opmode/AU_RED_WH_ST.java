@@ -202,7 +202,7 @@ public class AU_RED_WH_ST extends LinearOpMode {
                 .build();
 
         Trajectory lineup = drive.trajectoryBuilder(safetyback.end())
-                .lineToLinearHeading(new Pose2d(12.7, -64, 0))
+                .lineToLinearHeading(new Pose2d(12.7, -65, 0))
                 .addTemporalMarker(0, ()->{
                     CapArm.setPosition(0.7);
                     Spool.setTargetPosition(200);
@@ -211,7 +211,7 @@ public class AU_RED_WH_ST extends LinearOpMode {
                 .build();
 
         Trajectory warehouse = drive.trajectoryBuilder(lineup.end())
-                .forward(25)
+                .lineToLinearHeading(new Pose2d(38.7, -64, 0))
                 .build();
         Trajectory park = drive.trajectoryBuilder(warehouse.end())
                 .strafeLeft(20)

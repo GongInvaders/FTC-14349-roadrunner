@@ -216,25 +216,25 @@ public class AU_BLUE_CAR_ND_WH extends LinearOpMode {
                 .build();
 
         Trajectory prepareforcarousel = drive.trajectoryBuilder(duckdrop.end(), true)
-                .splineTo(new Vector2d(-62,24), Math.toRadians(180))
+                .splineTo(new Vector2d(-60,24), Math.toRadians(180))
                 .addTemporalMarker(1, ()->{
                     Spool.setTargetPosition(0);
                     Spool.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     Spool.setPower(1);})
                 .build();
         Trajectory carouselstrafe = drive.trajectoryBuilder(prepareforcarousel.end(), true)
-                .lineTo(new Vector2d(-63,56.5),
+                .lineTo(new Vector2d(-60,56.5),
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
         Trajectory park = drive.trajectoryBuilder(carouselstrafe.end(), true)
-                .lineTo(new Vector2d(-62,32),
+                .lineTo(new Vector2d(-60,32),
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
         Trajectory warehouse = drive.trajectoryBuilder((carouselstrafe.end()))
-                .splineTo(new Vector2d(12,64),0)
-                .forward(36)
+                .splineTo(new Vector2d(12,66),0)
+                .splineTo(new Vector2d(36, 66),0)
                 .build();
 
         /*Trajectory traj2 = drive.trajectoryBuilder(traj1.end(),true)
@@ -282,8 +282,8 @@ public class AU_BLUE_CAR_ND_WH extends LinearOpMode {
         }
         Spool.setPower(0);
         drive.followTrajectory(carouselstrafe);
-        Carousel.setPower(0.5);
-        sleep(3000);
+        Carousel.setPower(-0.4);
+        sleep(4250);
         Carousel.setPower(0);
         drive.followTrajectory(warehouse);
 

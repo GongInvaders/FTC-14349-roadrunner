@@ -201,7 +201,7 @@ public class AU_BLUE_WH_ST extends LinearOpMode {
                 .build();
 
         Trajectory warehouse = drive.trajectoryBuilder(lineup.end())
-                .forward(25)
+                .lineToLinearHeading(new Pose2d(38.7, 64, 0))
                 .build();
         Trajectory park = drive.trajectoryBuilder(warehouse.end())
                 .strafeRight(20)
